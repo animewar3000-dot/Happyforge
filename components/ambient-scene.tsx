@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect } from "react";
 import {
   motion,
   useMotionValue,
@@ -10,7 +10,6 @@ import {
 } from "motion/react";
 
 export function AmbientScene() {
-  const root = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
@@ -21,25 +20,29 @@ export function AmbientScene() {
   const driftX = useTransform(smoothX, [-1, 1], [-24, 24]);
   const driftY = useTransform(smoothY, [-1, 1], [-18, 18]);
 
-  function trackPointer(event: React.PointerEvent<HTMLDivElement>) {
-    if (reduceMotion || event.pointerType === "touch") return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    pointerX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 2);
-    pointerY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 2);
-  }
-
-  function resetPointer() {
-    pointerX.set(0);
-    pointerY.set(0);
-  }
+  useEffect(() => {
+    if (reduceMotion) return;
+    const handlePointer = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return;
+      pointerX.set((event.clientX / window.innerWidth - 0.5) * 2);
+      pointerY.set((event.clientY / window.innerHeight - 0.5) * 2);
+    };
+    const reset = () => {
+      pointerX.set(0);
+      pointerY.set(0);
+    };
+    window.addEventListener("pointermove", handlePointer, { passive: true });
+    window.addEventListener("blur", reset);
+    return () => {
+      window.removeEventListener("pointermove", handlePointer);
+      window.removeEventListener("blur", reset);
+    };
+  }, [pointerX, pointerY, reduceMotion]);
 
   return (
     <div
-      ref={root}
       className="ambient-scene"
       aria-hidden="true"
-      onPointerMove={trackPointer}
-      onPointerLeave={resetPointer}
     >
       <div className="ambient-grid" />
       <div className="ambient-glow ambient-glow-one" />
