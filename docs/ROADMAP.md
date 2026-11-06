@@ -29,8 +29,11 @@
 - [ ] Add diff review and approval before push.
 
 ## Milestone 3 — Identity and metadata
-- [ ] Supabase Auth.
-- [ ] User/project/session schema and row-level security.
+- [x] Supabase Auth client, email/password sign-in, sign-up and PKCE callback scaffold.
+- [x] User/project/session metadata schema and row-level security.
+- [x] Explicit authenticated-only Data API grants and owner-scoped policies.
+- [ ] Configure deployed app URL, publishable key and Auth redirect URLs.
+- [ ] Verify live sign-up, email confirmation, sign-in and sign-out.
 - [ ] Secure provider credential storage.
 - [ ] Workspace ownership and authorization.
 - [ ] Usage and quota accounting.
