@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   Activity, ArrowUp, Bot, Boxes, Braces, ChevronDown, CircleHelp,
   Command, GitBranch, Github, HardDrive, KeyRound, Menu, MessageSquare,
@@ -26,6 +26,18 @@ export default function Home() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [runtimeStatus, setRuntimeStatus] = useState<"checking" | "online" | "unavailable" | "not-configured">("checking");
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/agent/health", { cache: "no-store" })
+      .then(response => response.json())
+      .then(data => {
+        if (active) setRuntimeStatus(data.connected ? "online" : data.configured ? "unavailable" : "not-configured");
+      })
+      .catch(() => { if (active) setRuntimeStatus("unavailable"); });
+    return () => { active = false; };
+  }, []);
 
   async function sendTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -82,9 +94,9 @@ export default function Home() {
         </nav>
         <div className="sidebar-bottom">
           <div className="runtime-card">
-            <div className="runtime-heading"><span className="status-dot muted"/> AGENT RUNTIME</div>
-            <div className="runtime-title">OpenCode connection</div>
-            <p>Connect a secured OpenCode server and configure NVIDIA credentials to enable agent tasks.</p>
+            <div className="runtime-heading"><span className={`status-dot ${runtimeStatus === "online" ? "" : "muted"}`}/> AGENT RUNTIME</div>
+            <div className="runtime-title">{runtimeStatus === "online" ? "OpenCode connected" : runtimeStatus === "checking" ? "Checking connection…" : runtimeStatus === "not-configured" ? "Runtime not configured" : "Runtime unavailable"}</div>
+            <p>{runtimeStatus === "online" ? "The secured agent host is responding." : "Configure the OpenCode host URL and password to enable agent tasks."}</p>
           </div>
           <button className="nav-item"><Settings2 size={17}/> Settings</button>
           <div className="profile-row"><div className="avatar">HF</div><div><strong>My workspace</strong><small>Personal environment</small></div><ChevronDown size={15}/></div>
@@ -99,7 +111,7 @@ export default function Home() {
             <button className="icon-button mobile-menu" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu size={19}/></button>
             <div className="breadcrumb">Projects <span>/</span> <strong>{sessionId ? "Agent session" : "New workspace"}</strong></div>
           </div>
-          <div className="topbar-actions"><div className="connection-pill"><span className="status-dot muted"/> Agent runtime requires setup</div><button className="icon-button" aria-label="Help"><CircleHelp size={18}/></button></div>
+          <div className="topbar-actions"><div className="connection-pill"><span className={`status-dot ${runtimeStatus === "online" ? "" : "muted"}`}/> {runtimeStatus === "online" ? "Runtime online" : runtimeStatus === "checking" ? "Checking runtime" : "Runtime offline"}</div><button className="icon-button" aria-label="Help"><CircleHelp size={18}/></button></div>
         </header>
 
         <div className="content-wrap">
