@@ -2,16 +2,27 @@
 
 Happyforge's Next.js app is a client of a separately hosted OpenCode server. Do not launch a persistent agent process inside a Vercel Function.
 
-## 1. Install OpenCode on a persistent Linux host
+## 1. Start the included local agent runtime (Docker)
 
-Install OpenCode using the official installer:
+The repository includes a containerized OpenCode host for local development. It binds to localhost only and mounts a dedicated `agent-workspace/` directory, not the entire application repository.
+
+```bash
+cp .env.example .env
+# Edit .env and set NVIDIA_API_KEY and OPENCODE_SERVER_PASSWORD
+mkdir -p agent-workspace
+docker compose up --build -d
+```
+
+The compose file mounts `opencode.json` read-only into the agent workspace. Put or clone a test repository inside `agent-workspace/` for the agent to inspect. The local server is available at `http://127.0.0.1:4096`.
+
+If Docker is unavailable, install OpenCode on a persistent Linux host using the official installer:
 
 ```bash
 curl -fsSL https://opencode.ai/install | bash
 opencode --version
 ```
 
-Use a dedicated workspace directory and copy the repository's `opencode.json` into that directory (or configure the same provider in the host's OpenCode config).
+Run the server from a dedicated workspace directory and ensure the OpenCode config is present there.
 
 ## 2. Configure NVIDIA NIM
 
@@ -42,7 +53,7 @@ Place the host behind a private network, VPN, or authenticated reverse proxy. Do
 Set these server-side variables in local `.env.local` or your hosting provider's encrypted environment settings:
 
 ```dotenv
-OPENCODE_SERVER_URL=https://your-private-opencode-host.example
+OPENCODE_SERVER_URL=http://127.0.0.1:4096
 OPENCODE_SERVER_USERNAME=opencode
 OPENCODE_SERVER_PASSWORD=your-long-random-secret
 ```
