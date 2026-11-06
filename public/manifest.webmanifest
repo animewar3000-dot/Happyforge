@@ -1,0 +1,11 @@
+{
+  "name": "Happyforge — AI Development Workspace",
+  "short_name": "Happyforge",
+  "description": "A mobile-first AI coding workspace.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090b10",
+  "theme_color": "#090b10",
+  "orientation": "any",
+  "icons": []
+}
