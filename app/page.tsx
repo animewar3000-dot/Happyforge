@@ -2,8 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import {
-  Activity, ArrowUp, Bot, Boxes, Braces, ChevronDown, CircleHelp,
-  Command, GitBranch, Github, HardDrive, KeyRound, Menu, MessageSquare,
+  Activity, ArrowUp, Bot, Boxes, ChevronDown, CircleHelp,
+  Command, GitBranch, HardDrive, KeyRound, Menu, MessageSquare,
   Plus, Settings2, ShieldCheck, Sparkles, Wrench, X, LoaderCircle,
   TerminalSquare, UserRound, LogOut
 } from "lucide-react";
