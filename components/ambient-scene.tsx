@@ -9,6 +9,8 @@ import {
   useTransform,
 } from "motion/react";
 
+const tiles = Array.from({ length: 144 }, (_, index) => index);
+
 export function AmbientScene() {
   const reduceMotion = useReducedMotion();
   const pointerX = useMotionValue(0);
@@ -27,10 +29,7 @@ export function AmbientScene() {
       pointerX.set((event.clientX / window.innerWidth - 0.5) * 2);
       pointerY.set((event.clientY / window.innerHeight - 0.5) * 2);
     };
-    const reset = () => {
-      pointerX.set(0);
-      pointerY.set(0);
-    };
+    const reset = () => { pointerX.set(0); pointerY.set(0); };
     window.addEventListener("pointermove", handlePointer, { passive: true });
     window.addEventListener("blur", reset);
     return () => {
@@ -40,17 +39,14 @@ export function AmbientScene() {
   }, [pointerX, pointerY, reduceMotion]);
 
   return (
-    <div
-      className="ambient-scene"
-      aria-hidden="true"
-    >
+    <div className="ambient-scene" aria-hidden="true">
       <div className="ambient-grid" />
+      <div className="mobile-tile-wall">
+        {tiles.map((tile) => <span className={`mobile-tile tile-tone-${(tile * 13 + Math.floor(tile / 12) * 7) % 9}`} key={tile} />)}
+      </div>
       <div className="ambient-glow ambient-glow-one" />
       <div className="ambient-glow ambient-glow-two" />
-      <motion.div
-        className="ambient-object"
-        style={reduceMotion ? undefined : { rotateX, rotateY, x: driftX, y: driftY }}
-      >
+      <motion.div className="ambient-object" style={reduceMotion ? undefined : { rotateX, rotateY, x: driftX, y: driftY }}>
         <div className="ambient-orb">
           <div className="orb-core" />
           <div className="orb-ring orb-ring-one" />
