@@ -1,0 +1,14 @@
+services:
+  opencode:
+    build:
+      context: .
+      dockerfile: agent-runtime/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4096:4096"
+    environment:
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:?Set NVIDIA_API_KEY in .env}
+      OPENCODE_SERVER_PASSWORD: ${OPENCODE_SERVER_PASSWORD:?Set OPENCODE_SERVER_PASSWORD in .env}
+    volumes:
+      - ./agent-workspace:/workspace
+      - ./opencode.json:/workspace/opencode.json:ro
