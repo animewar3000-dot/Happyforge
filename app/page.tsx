@@ -8,6 +8,8 @@ import {
   TerminalSquare, UserRound, LogOut
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { AmbientScene } from "@/components/ambient-scene";
+import { motion } from "motion/react";
 
 const navItems = [
   { label: "Workspace", icon: Boxes },
@@ -77,6 +79,7 @@ export default function Home() {
 
   return (
     <main className="forge-shell">
+      <AmbientScene />
       <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="brand-row">
           <div className="brand-mark"><Command size={19} /></div>
@@ -117,9 +120,9 @@ export default function Home() {
         </header>
 
         <div className="content-wrap">
-          <div className="welcome-kicker"><Sparkles size={14}/> OPEN CODE. YOUR RULES.</div>
-          <h1>Build something<br className="mobile-break"/> <span>remarkable.</span></h1>
-          <p className="hero-copy">A mobile-first engineering workspace powered by the OpenCode agent engine. Give it a task, connect your model provider, and keep control of every change.</p>
+          <motion.div className="welcome-kicker" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}><Sparkles size={14}/> YOUR IDE. YOUR AGENT. YOUR RULES.</motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}>Build beyond<br className="mobile-break"/> <span>the ordinary.</span></motion.h1>
+          <motion.p className="hero-copy" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.18 }}>A focused command center for building with AI. Describe the outcome, stay close to every change, and keep your tools in one place.</motion.p>
 
           {messages.length > 0 && (
             <section className="conversation" aria-live="polite">
@@ -146,10 +149,10 @@ export default function Home() {
 
           <div className="section-heading"><div><span className="eyebrow">ENGINEERING STACK</span><h2>Your workspace toolkit</h2></div><span className="muted-label">MILESTONE 1</span></div>
           <div className="tool-grid">
-            <article className="tool-card"><div className="tool-icon purple"><Bot size={19}/></div><div className="tool-title">OpenCode engine</div><p>Official TypeScript SDK connects to a secured, persistent OpenCode server.</p><span className="card-status"><span className="status-dot muted"/> Integration scaffolded</span></article>
-            <article className="tool-card"><div className="tool-icon green"><Activity size={19}/></div><div className="tool-title">NVIDIA NIM</div><p>OpenAI-compatible provider configuration using a server-side API key.</p><span className="card-status"><span className="status-dot muted"/> Credential required</span></article>
-            <article className="tool-card"><div className="tool-icon orange"><Wrench size={19}/></div><div className="tool-title">MCP integrations</div><p>Next milestone: remote and workspace-local tools with scoped permissions.</p><span className="card-status"><span className="status-dot muted"/> Planned</span></article>
-            <article className="tool-card"><div className="tool-icon blue"><Sparkles size={19}/></div><div className="tool-title">Skills library</div><p>Portable global and project-level skills discovered by the agent engine.</p><span className="card-status"><span className="status-dot muted"/> Planned</span></article>
+            <motion.article className="tool-card" whileHover={{ y: -7, rotateX: 2, rotateY: -2 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}><div className="tool-icon purple"><Bot size={19}/></div><div className="tool-title">OpenCode engine</div><p>Official TypeScript SDK connects to a secured, persistent OpenCode server.</p><span className="card-status"><span className="status-dot muted"/> Integration scaffolded</span></motion.article>
+            <motion.article className="tool-card" whileHover={{ y: -7, rotateX: 2, rotateY: 2 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}><div className="tool-icon green"><Activity size={19}/></div><div className="tool-title">NVIDIA NIM</div><p>OpenAI-compatible provider configuration using a server-side API key.</p><span className="card-status"><span className="status-dot muted"/> Credential required</span></motion.article>
+            <motion.article className="tool-card" whileHover={{ y: -7, rotateX: -2, rotateY: -2 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}><div className="tool-icon orange"><Wrench size={19}/></div><div className="tool-title">MCP integrations</div><p>Next milestone: remote and workspace-local tools with scoped permissions.</p><span className="card-status"><span className="status-dot muted"/> Planned</span></motion.article>
+            <motion.article className="tool-card" whileHover={{ y: -7, rotateX: -2, rotateY: 2 }} transition={{ type: "spring", stiffness: 280, damping: 20 }}><div className="tool-icon blue"><Sparkles size={19}/></div><div className="tool-title">Skills library</div><p>Portable global and project-level skills discovered by the agent engine.</p><span className="card-status"><span className="status-dot muted"/> Planned</span></motion.article>
           </div>
 
           <div className="bottom-grid">
