@@ -73,8 +73,8 @@ Open `http://localhost:3000`, submit a short task and verify that the configured
 
 ## Current proof-of-concept limits
 
-- The first endpoint uses request/response prompting; token-by-token UI streaming is a follow-up.
+- The first endpoint uses request/response prompting; token-by-token UI streaming is a follow-up.\n- Session IDs returned to the browser are Happyforge metadata UUIDs, not raw OpenCode session IDs.
 - The server's default working directory is the workspace context. Repository selection and per-project workspace routing are not implemented yet.
-- There is no user authentication or tenant isolation in this proof of concept. Do not deploy it as a public multi-user service yet.
+- The Next.js task API requires a Supabase-authenticated user and maps browser-visible session UUIDs to OpenCode session IDs through owner-scoped `agent_sessions` rows. Cross-user session reuse is rejected. This is an initial ownership boundary, not a complete multi-tenant execution sandbox: each user must receive an isolated workspace/runtime before enabling untrusted code execution.
 - Tool execution inherits the permissions and filesystem access of the OpenCode host. Use a disposable, isolated workspace for testing.
 - No provider-key rotation or quota bypass is implemented.
