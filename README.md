@@ -2,7 +2,7 @@
 
 A mobile-first, extensible AI software engineering workspace. The product direction is to combine the OpenCode agent engine with a custom mobile interface, provider routing, MCP integrations, portable skills, and isolated local/cloud workspaces.
 
-> **Status:** Foundation scaffold. The UI is a product shell; agent execution is not connected yet.
+> **Status:** OpenCode integration scaffold. The mobile task composer calls a secured OpenCode server through a server-side SDK client. A configured runtime and NVIDIA credential are still required for end-to-end execution.
 
 ## Product principles
 
