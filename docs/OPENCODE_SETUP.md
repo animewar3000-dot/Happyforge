@@ -50,13 +50,15 @@ Place the host behind a private network, VPN, or authenticated reverse proxy. Do
 
 ## 4. Configure the Happyforge web app
 
-Set these server-side variables in local `.env.local` or your hosting provider's encrypted environment settings:
+The Docker Compose `.env` file is read by Docker Compose. Next.js reads `.env.local` separately. Create `.env.local` with only the web app's OpenCode connection settings:
 
 ```dotenv
 OPENCODE_SERVER_URL=http://127.0.0.1:4096
 OPENCODE_SERVER_USERNAME=opencode
-OPENCODE_SERVER_PASSWORD=your-long-random-secret
+OPENCODE_SERVER_PASSWORD=the-same-long-random-secret
 ```
+
+For a deployed frontend, set these as encrypted server-side environment variables and point `OPENCODE_SERVER_URL` at a private, TLS-protected runtime endpoint. Do not put these values in `NEXT_PUBLIC_*` variables.
 
 The NVIDIA key belongs on the OpenCode host, not in browser-exposed Next.js variables. The Next.js API route uses HTTP Basic authentication to connect to OpenCode.
 
