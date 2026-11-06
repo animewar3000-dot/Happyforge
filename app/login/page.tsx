@@ -1,12 +1,10 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { ArrowRight, Bot, LoaderCircle, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const searchParams = useSearchParams();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +35,7 @@ export default function LoginPage() {
       } else {
         const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
         if (authError) throw authError;
-        const next = searchParams.get("next");
+        const next = new URLSearchParams(window.location.search).get("next");
         const destination = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
         window.location.assign(destination);
       }
