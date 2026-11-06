@@ -5,8 +5,9 @@ import {
   Activity, ArrowUp, Bot, Boxes, Braces, ChevronDown, CircleHelp,
   Command, GitBranch, Github, HardDrive, KeyRound, Menu, MessageSquare,
   Plus, Settings2, ShieldCheck, Sparkles, Wrench, X, LoaderCircle,
-  TerminalSquare, UserRound
+  TerminalSquare, UserRound, LogOut
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { label: "Workspace", icon: Boxes },
@@ -99,6 +100,7 @@ export default function Home() {
             <p>{runtimeStatus === "online" ? "The secured agent host is responding." : "Configure the OpenCode host URL and password to enable agent tasks."}</p>
           </div>
           <button className="nav-item"><Settings2 size={17}/> Settings</button>
+          <button className="nav-item" onClick={async () => { await createClient().auth.signOut(); window.location.assign("/login"); }}><LogOut size={17}/> Sign out</button>
           <div className="profile-row"><div className="avatar">HF</div><div><strong>My workspace</strong><small>Personal environment</small></div><ChevronDown size={15}/></div>
         </div>
       </aside>
