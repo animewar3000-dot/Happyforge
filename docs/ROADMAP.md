@@ -15,7 +15,7 @@
 - [x] Connect the mobile task composer to the agent API.
 - [ ] Install dependencies and verify typecheck/build in a real runtime.
 - [ ] Start an OpenCode host with a valid NVIDIA credential.
-- [ ] Verify one end-to-end prompt against a real workspace.
+- [x] Require Supabase authentication and enforce owner-scoped session lookup before agent requests.\n- [ ] Verify one end-to-end prompt against a real workspace.
 - [ ] Add streamed events and visible tool activity.
 
 **Acceptance:** From the mobile UI, submit a task to a secured OpenCode host and receive the agent's response without exposing secrets.
@@ -34,7 +34,7 @@
 - [x] Explicit authenticated-only Data API grants and owner-scoped policies.
 - [ ] Configure deployed app URL, publishable key and Auth redirect URLs.
 - [ ] Verify live sign-up, email confirmation, sign-in and sign-out.
-- [ ] Secure provider credential storage.
+- [ ] Secure provider credential storage.\n- [x] Persist agent-session ownership metadata in Supabase.
 - [ ] Workspace ownership and authorization.
 - [ ] Usage and quota accounting.
 
