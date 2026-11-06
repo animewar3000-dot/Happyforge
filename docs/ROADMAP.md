@@ -1,29 +1,32 @@
 # Happyforge Roadmap
 
-## Milestone 0 — Foundation (current)
+## Milestone 0 — Foundation
 - [x] Initialize Next.js + TypeScript + Tailwind application.
 - [x] Add responsive mobile-first workspace shell.
 - [x] Document architecture, storage boundaries and security principles.
-- [ ] Verify install/build in CI.
+- [x] Add CI workflow.
 
-## Milestone 1 — Agent proof of concept
-- [ ] Pin OpenCode version and integrate its SDK in a server-side service.
-- [ ] Run OpenCode locally in development.
-- [ ] Connect one NVIDIA NIM model through server-side credentials.
-- [ ] Create an agent session and stream events to the UI.
-- [ ] Demonstrate repository inspection and a safe read-only task.
+## Milestone 1 — OpenCode + NVIDIA proof of concept (in progress)
+- [x] Add official OpenCode TypeScript SDK dependency.
+- [x] Add authenticated server-side OpenCode client.
+- [x] Add task API endpoint and session reuse.
+- [x] Add NVIDIA NIM custom-provider configuration.
+- [x] Add runtime setup documentation.
+- [x] Connect the mobile task composer to the agent API.
+- [ ] Install dependencies and verify typecheck/build in a real runtime.
+- [ ] Start an OpenCode host with a valid NVIDIA credential.
+- [ ] Verify one end-to-end prompt against a real workspace.
+- [ ] Add streamed events and visible tool activity.
 
-**Acceptance:** From the mobile UI, ask an agent to inspect a test repository and receive streamed progress/results without exposing secrets.
+**Acceptance:** From the mobile UI, submit a task to a secured OpenCode host and receive the agent's response without exposing secrets.
 
 ## Milestone 2 — Workspace execution
 - [ ] Define workspace adapter interface.
-- [ ] Implement local Docker workspace for development.
+- [ ] Implement isolated Linux workspace provisioning.
 - [ ] Add GitHub clone/branch workflow.
 - [ ] Add shell, file read/write and test tools.
 - [ ] Enforce resource and network policies.
 - [ ] Add diff review and approval before push.
-
-**Acceptance:** Agent changes files in an isolated workspace, runs tests and presents a reviewable diff.
 
 ## Milestone 3 — Identity and metadata
 - [ ] Supabase Auth.
