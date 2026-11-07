@@ -2,9 +2,9 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Activity, ArrowUp, Bot, Boxes, ChevronDown, CircleHelp, Command,
+  Activity, ArrowUp, Bot, Boxes, ChevronDown, Command,
   GitBranch, HardDrive, KeyRound, Menu, MessageSquare, Plus, Settings2,
-  ShieldCheck, Sparkles, Wrench, X, LoaderCircle, TerminalSquare,
+  ShieldCheck, Sparkles, Wrench, X, LoaderCircle,
   UserRound, LogOut, Search, Clock3, CheckCircle2, CircleAlert,
   FolderGit2, Zap, MoreHorizontal, ExternalLink, LockKeyhole, RefreshCw
 } from "lucide-react";
@@ -61,7 +61,7 @@ export default function WorkspacePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [, setMessages] = useState<ChatMessage[]>([]);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -314,7 +314,7 @@ export default function WorkspacePage() {
           )}
 
           {active === "Skills library" && (
-            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">REUSABLE KNOWLEDGE</span><h1>Skills <span>library.</span></h1><p className="hero-copy">Reusable instructions that shape how your coding agent works.</p></div></div><div className="hf-empty"><Sparkles size={24}/><strong>Skill management is the next module</strong><span>The prototype's sample skills were not connected to persistent storage. This page shows the implementation boundary rather than fabricated installed skills.</span></div></section>
+            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">REUSABLE KNOWLEDGE</span><h1>Skills <span>library.</span></h1><p className="hero-copy">Reusable instructions that shape how your coding agent works.</p></div></div><div className="hf-empty"><Sparkles size={24}/><strong>Skill management is the next module</strong><span>The supplied prototype sample skills were not connected to persistent storage. This page shows the implementation boundary rather than fabricated installed skills.</span></div></section>
           )}
 
           {active === "Models & keys" && (
