@@ -160,8 +160,11 @@ export default function WorkspacePage() {
     setCreatingProject(true);
     setError("");
     try {
-      const { data, error: insertError } = await createClient().from("projects").insert({
-        owner_id: (await createClient().auth.getUser()).data.user?.id,
+      const supabase = createClient();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) throw new Error("Sign in again before creating a project.");
+      const { data, error: insertError } = await supabase.from("projects").insert({
+        owner_id: user.id,
         name,
         repository_url: projectRepository.trim() || null,
         default_branch: "main",
@@ -216,6 +219,7 @@ export default function WorkspacePage() {
 
   function openSession(session: Session) {
     setSelectedSession(session);
+    setSelectedProject(session.project_id ?? "all");
     setSessionId(session.id);
     setMessages([]);
     setActive("Agent sessions");
