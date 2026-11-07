@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "A JSON request body is required." }, { status: 400 });
   }
 
-  const { prompt, sessionId } = body as { prompt?: unknown; sessionId?: unknown };
+  const { prompt, sessionId, projectId } = body as { prompt?: unknown; sessionId?: unknown; projectId?: unknown };
   if (typeof prompt !== "string" || !prompt.trim()) {
     return NextResponse.json({ error: "Enter a task for the agent." }, { status: 400 });
   }
@@ -57,11 +57,21 @@ export async function POST(request: NextRequest) {
       (typeof sessionId !== "string" || !UUID_PATTERN.test(sessionId))) {
     return NextResponse.json({ error: "Invalid session identifier." }, { status: 400 });
   }
+  if (projectId !== undefined && projectId !== null &&
+      (typeof projectId !== "string" || !UUID_PATTERN.test(projectId))) {
+    return NextResponse.json({ error: "Invalid project identifier." }, { status: 400 });
+  }
 
   let metadataSessionId: string | null = typeof sessionId === "string" ? sessionId : null;
   let openCodeSessionId: string | null = null;
 
   try {
+    if (typeof projectId === "string") {
+      const { data: ownedProject, error: projectError } = await supabase
+        .from("projects").select("id").eq("id", projectId).eq("owner_id", user.id).maybeSingle();
+      if (projectError) throw new Error("Could not verify project ownership.");
+      if (!ownedProject) return NextResponse.json({ error: "Project not found." }, { status: 404 });
+    }
     if (metadataSessionId) {
       const { data: ownedSession, error } = await supabase
         .from("agent_sessions")
@@ -94,6 +104,7 @@ export async function POST(request: NextRequest) {
         .from("agent_sessions")
         .insert({
           owner_id: user.id,
+          project_id: typeof projectId === "string" ? projectId : null,
           opencode_session_id: openCodeSessionId,
           title: prompt.trim().slice(0, 72),
           status: "running",
@@ -108,7 +119,7 @@ export async function POST(request: NextRequest) {
     } else {
       const { error } = await supabase
         .from("agent_sessions")
-        .update({ status: "running" })
+        .update({ status: "running", ...(typeof projectId === "string" ? { project_id: projectId } : {}) })
         .eq("id", metadataSessionId)
         .eq("owner_id", user.id);
       if (error) throw new Error("Could not update the agent session.");
