@@ -44,7 +44,14 @@ export async function middleware(request: NextRequest) {
     return redirect;
   }
 
-  if (claims && pathname === "/") return NextResponse.redirect(new URL("/workspace", request.url));
+  if (claims && pathname === "/") {
+    const redirect = NextResponse.redirect(new URL("/workspace", request.url));
+    response.cookies.getAll().forEach(cookie => redirect.cookies.set(cookie));
+    response.headers.forEach((value, name) => {
+      if (["cache-control", "expires", "pragma"].includes(name.toLowerCase())) redirect.headers.set(name, value);
+    });
+    return redirect;
+  }
   return response;
 }
 
