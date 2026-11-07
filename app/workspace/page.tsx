@@ -61,7 +61,11 @@ export default function WorkspacePage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedProject, setSelectedProject] = useState("all");
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
-  const [, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [projectName, setProjectName] = useState("");
+  const [projectRepository, setProjectRepository] = useState("");
+  const [creatingProject, setCreatingProject] = useState(false);
+  const [showProjectForm, setShowProjectForm] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -132,7 +136,7 @@ export default function WorkspacePage() {
       const response = await fetch("/api/agent/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: task, sessionId }),
+        body: JSON.stringify({ prompt: task, sessionId, projectId: selectedProject === "all" ? null : selectedProject }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "The agent request failed.");
@@ -147,6 +151,43 @@ export default function WorkspacePage() {
     } finally {
       setBusy(false);
     }
+  }
+
+  async function createProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const name = projectName.trim();
+    if (!name || creatingProject) return;
+    setCreatingProject(true);
+    setError("");
+    try {
+      const { data, error: insertError } = await createClient().from("projects").insert({
+        owner_id: (await createClient().auth.getUser()).data.user?.id,
+        name,
+        repository_url: projectRepository.trim() || null,
+        default_branch: "main",
+      }).select("id,name,repository_url,default_branch,created_at").single();
+      if (insertError || !data) throw new Error(insertError?.message || "Project could not be created.");
+      setProjects(current => [data as Project, ...current]);
+      setSelectedProject(data.id);
+      setProjectName("");
+      setProjectRepository("");
+      setShowProjectForm(false);
+      setNotice("Project created and saved to your account.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Project creation failed.");
+    } finally {
+      setCreatingProject(false);
+    }
+  }
+
+  async function deleteProject(project: Project) {
+    const confirmed = window.confirm(`Delete project “${project.name}”? Its agent sessions will remain in your history.`);
+    if (!confirmed) return;
+    const { error: deleteError } = await createClient().from("projects").delete().eq("id", project.id);
+    if (deleteError) { setError(deleteError.message); return; }
+    setProjects(current => current.filter(item => item.id !== project.id));
+    if (selectedProject === project.id) setSelectedProject("all");
+    setNotice("Project deleted.");
   }
 
   function newTask() {
@@ -258,6 +299,7 @@ export default function WorkspacePage() {
                 </div>
                 {runtimeStatus !== "online" && <p className="hf-runtime-note">{runtimeStatus === "checking" ? "Checking the secured runtime…" : runtimeStatus === "not-configured" ? "Task execution is disabled because the OpenCode host is not configured." : "Task execution is paused because the OpenCode host is unreachable."}</p>}
               </form>
+              {messages.length > 0 && <section className="hf-conversation" aria-live="polite"><div className="section-heading"><div><span className="eyebrow">CURRENT TASK</span><h2>Agent conversation</h2></div><button className="hf-text-link" onClick={() => setMessages([])}>Clear</button></div>{messages.map((message, index) => <article className={`hf-message ${message.role}`} key={`${index}-${message.role}`}><strong>{message.role === "user" ? "You" : "Happyforge agent"}</strong><p>{message.content}</p></article>)}</section>}
               <div className="notice"><ShieldCheck size={16}/><span>Your prompts are sent to the secured OpenCode host. Provider credentials remain server-side and are never stored in browser state.</span></div>
 
               <div className="section-heading"><div><span className="eyebrow">YOUR PROJECTS</span><h2>Pick up where you left off</h2></div><button className="hf-text-link" onClick={() => setActive("Projects")}>View projects <ArrowUp size={13}/></button></div>
@@ -303,8 +345,9 @@ export default function WorkspacePage() {
           )}
 
           {active === "Projects" && (
-            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">PROJECT ORGANIZATION</span><h1>Your <span>projects.</span></h1><p className="hero-copy">Projects group your agent sessions and repository context.</p></div></div>
-              {loadingData ? <div className="hf-loading"><LoaderCircle className="spin" size={18}/> Loading projects…</div> : projects.length ? <div className="hf-project-grid full">{projects.map(project => <article className={`hf-project-card ${selectedProject === project.id ? "selected" : ""}`} key={project.id}><div className="hf-project-card-top"><span className="hf-project-symbol"><FolderGit2 size={17}/></span><span className="hf-branch"><GitBranch size={12}/>{project.default_branch || "main"}</span></div><strong>{project.name}</strong><small>{project.repository_url || "No repository connected"}</small><button onClick={() => {setSelectedProject(project.id);setActive("Workspace");}}>Open project</button></article>)}</div> : <div className="hf-empty"><FolderGit2 size={23}/><strong>No project records yet</strong><span>The current database stores project metadata. GitHub repository import and synchronization are separate integration steps.</span></div>}
+            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">PROJECT ORGANIZATION</span><h1>Your <span>projects.</span></h1><p className="hero-copy">Projects group your agent sessions and repository context.</p></div><button className="new-task hf-page-action" onClick={() => setShowProjectForm(value => !value)}><Plus size={15}/> New project</button></div>
+              {showProjectForm && <form className="hf-project-form" onSubmit={createProject}><label>Project name<input value={projectName} onChange={event => setProjectName(event.target.value)} required maxLength={80} placeholder="e.g. CampusIQ"/></label><label>Git repository URL <span>(optional)</span><input value={projectRepository} onChange={event => setProjectRepository(event.target.value)} type="url" placeholder="https://github.com/you/repository"/></label><div><button type="button" className="hf-quiet-button" onClick={() => setShowProjectForm(false)}>Cancel</button><button type="submit" className="new-task" disabled={!projectName.trim() || creatingProject}>{creatingProject ? "Creating…" : "Create project"}</button></div></form>}
+              {loadingData ? <div className="hf-loading"><LoaderCircle className="spin" size={18}/> Loading projects…</div> : projects.length ? <div className="hf-project-grid full">{projects.map(project => <article className={`hf-project-card ${selectedProject === project.id ? "selected" : ""}`} key={project.id}><div className="hf-project-card-top"><span className="hf-project-symbol"><FolderGit2 size={17}/></span><span className="hf-branch"><GitBranch size={12}/>{project.default_branch || "main"}</span></div><strong>{project.name}</strong><small>{project.repository_url || "No repository connected"}</small><div className="hf-project-actions"><button onClick={() => {setSelectedProject(project.id);setActive("Workspace");}}>Use project</button><button className="danger" onClick={() => void deleteProject(project)}>Delete</button></div></article>)}</div> : <div className="hf-empty"><FolderGit2 size={23}/><strong>No project records yet</strong><span>The current database stores project metadata. GitHub repository import and synchronization are separate integration steps.</span></div>}
               <div className="hf-info-strip"><ShieldCheck size={16}/><span>Projects and sessions are scoped to your authenticated Supabase user through Row Level Security.</span></div>
             </section>
           )}
