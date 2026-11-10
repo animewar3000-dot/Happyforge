@@ -5,10 +5,11 @@ import Link from "next/link";
 import * as THREE from "three";
 import { ArrowLeft, ArrowRight, Bot, Check, Eye, EyeOff, Fingerprint, LoaderCircle, LockKeyhole, Mail, ShieldCheck, Sparkles, TerminalSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { buildPasswordRecoveryRedirect, getRequestedAuthMode } from "@/lib/auth-recovery.mjs";
 
 export default function ModernLoginSignup() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "recovery">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,10 @@ export default function ModernLoginSignup() {
     () => [password.length >= 8, /[A-Z]/.test(password), /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password)].filter(Boolean).length,
     [password],
   );
+
+  useEffect(() => {
+    if (getRequestedAuthMode(window.location.search) === "recovery") setMode("recovery");
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -134,7 +139,7 @@ export default function ModernLoginSignup() {
     };
   }, []);
 
-  function changeMode(next: "signin" | "signup") {
+  function changeMode(next: "signin" | "signup" | "recovery") {
     setMode(next);
     setError("");
     setMessage("");
@@ -149,6 +154,14 @@ export default function ModernLoginSignup() {
     setMessage("");
     try {
       const supabase = createClient();
+      if (mode === "recovery") {
+        const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: buildPasswordRecoveryRedirect(window.location.origin),
+        });
+        if (authError) throw authError;
+        setMessage("If an account exists for this address, a password reset link has been sent. Check your inbox.");
+        return;
+      }
       if (mode === "signup") {
         const { data, error: authError } = await supabase.auth.signUp({
           email,
@@ -183,8 +196,8 @@ export default function ModernLoginSignup() {
           <Link href="/" className="auth-brand"><span className="auth-mark"><Bot size={22} /></span><span>happyforge<span className="brand-period">.</span></span></Link>
           <div className="auth-story-copy">
             <div className="auth-kicker"><span className="auth-live-dot" /> YOUR WORKSPACE, YOUR CONTROL</div>
-            <h1>{mode === "signin" ? <>Good to have<br />you <span>back.</span></> : <>Make room<br />for <span>what&apos;s next.</span></>}</h1>
-            <p>{mode === "signin" ? "Pick up where your ideas left off. Your projects and agent sessions are right where you need them." : "One workspace for your projects, your tools and the ideas you’re ready to build."}</p>
+            <h1>{mode === "signin" ? <>Good to have<br />you <span>back.</span></> : mode === "recovery" ? <>Reset your<br /><span>password.</span></> : <>Make room<br />for <span>what&apos;s next.</span></>}</h1>
+            <p>{mode === "signin" ? "Pick up where your ideas left off. Your projects and agent sessions are right where you need them." : mode === "recovery" ? "Enter your account email and we’ll send a secure password reset link." : "One workspace for your projects, your tools and the ideas you’re ready to build."}</p>
           </div>
           <div className="auth-terminal" aria-label="Happyforge workspace preview">
             <div className="auth-terminal-top"><span><i /><i /><i /></span><small><TerminalSquare size={12} /> HAPPYFORGE / WORKSPACE</small><span className="terminal-lock"><LockKeyhole size={12} /> PRIVATE</span></div>
@@ -195,19 +208,21 @@ export default function ModernLoginSignup() {
         </aside>
         <section className="auth-card" aria-labelledby="auth-title">
           <div className="auth-card-head"><div className="auth-mobile-brand"><span className="auth-mark"><Bot size={20} /></span><b>happyforge<span className="brand-period">.</span></b></div><span className="auth-step"><Sparkles size={13} /> YOUR NEXT CHAPTER</span></div>
-          <div className="auth-form-heading"><div className="auth-kicker"><ShieldCheck size={14} /> {mode === "signin" ? "SECURE SIGN IN" : "GET STARTED"}</div><h2 id="auth-title">{mode === "signin" ? "Welcome back." : "Create your account."}</h2><p>{mode === "signin" ? "Sign in to open your workspace." : "Set up your account and start building with Happyforge."}</p></div>
+          <div className="auth-form-heading"><div className="auth-kicker"><ShieldCheck size={14} /> {mode === "signin" ? "SECURE SIGN IN" : mode === "recovery" ? "ACCOUNT RECOVERY" : "GET STARTED"}</div><h2 id="auth-title">{mode === "signin" ? "Welcome back." : mode === "recovery" ? "Reset your password." : "Create your account."}</h2><p>{mode === "signin" ? "Sign in to open your workspace." : mode === "recovery" ? "We’ll email you a one-time link to securely choose a new password." : "Set up your account and start building with Happyforge."}</p></div>
           <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
-            <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "selected" : ""} onClick={() => changeMode("signin")}>Sign in</button>
-            <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "selected" : ""} onClick={() => changeMode("signup")}>Create account</button>
+            {mode === "recovery" ? <button type="button" className="auth-recovery-back" onClick={() => changeMode("signin")}><ArrowLeft size={14} /> Back to sign in</button> : <>
+              <button type="button" role="tab" aria-selected={mode === "signin"} className={mode === "signin" ? "selected" : ""} onClick={() => changeMode("signin")}>Sign in</button>
+              <button type="button" role="tab" aria-selected={mode === "signup"} className={mode === "signup" ? "selected" : ""} onClick={() => changeMode("signup")}>Create account</button>
+            </>}
           </div>
           <form className="auth-form" onSubmit={submit}>
             <label htmlFor="modern-auth-email">Email address</label>
             <div className="auth-input-wrap"><Mail size={17} /><input id="modern-auth-email" type="email" autoComplete="email" required value={email} onChange={event => setEmail(event.target.value)} placeholder="you@example.com" /></div>
-            <div className="auth-password-label"><label htmlFor="modern-auth-password">Password</label>{mode === "signup" && <span>8+ characters</span>}</div>
-            <div className="auth-input-wrap"><LockKeyhole size={17} /><input id="modern-auth-password" type={showPassword ? "text" : "password"} autoComplete={mode === "signin" ? "current-password" : "new-password"} minLength={8} required value={password} onChange={event => setPassword(event.target.value)} placeholder="Enter your password" /><button className="auth-eye" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div>
+            <div className="auth-password-label" hidden={mode === "recovery"}><label htmlFor="modern-auth-password">Password</label>{mode === "signup" ? <span>8+ characters</span> : mode === "signin" ? <button type="button" className="auth-forgot" onClick={() => changeMode("recovery")}>Forgot password?</button> : null}</div>
+            <div className="auth-input-wrap" hidden={mode === "recovery"}><LockKeyhole size={17} /><input id="modern-auth-password" type={showPassword ? "text" : "password"} autoComplete={mode === "signin" ? "current-password" : "new-password"} minLength={8} required={mode !== "recovery"} value={password} onChange={event => setPassword(event.target.value)} placeholder="Enter your password" /><button className="auth-eye" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={17} /> : <Eye size={17} />}</button></div>
             {mode === "signup" && <div className="auth-strength" aria-label={`Password strength: ${strength} of 4`}><div className="auth-strength-bars">{[0, 1, 2, 3].map(index => <i key={index} className={strength > index ? "filled" : ""} />)}</div><span>{password.length === 0 ? "Use a strong password" : strength <= 1 ? "Needs more strength" : strength <= 3 ? "Looking good" : "Strong password"}</span></div>}
             {error && <p className="auth-error" role="alert">{error}</p>}{message && <p className="auth-success" role="status">{message}</p>}
-            <button className="auth-submit" type="submit" disabled={busy}>{busy ? <><LoaderCircle size={17} className="spin" /> {mode === "signin" ? "Signing you in…" : "Creating your account…"}</> : <>{mode === "signin" ? "Sign in to Happyforge" : "Create my account"} <ArrowRight size={18} /></>}</button>
+            <button className="auth-submit" type="submit" disabled={busy}>{busy ? <><LoaderCircle size={17} className="spin" /> {mode === "signin" ? "Signing you in…" : mode === "recovery" ? "Sending reset link…" : "Creating your account…"}</> : <>{mode === "signin" ? "Sign in to Happyforge" : mode === "recovery" ? "Send password reset link" : "Create my account"} <ArrowRight size={18} /></>}</button>
           </form>
           <div className="auth-divider"><span /><small>BUILT FOR YOUR WORKFLOW</small><span /></div>
           <div className="auth-benefits"><span><Check size={14} /> Projects in one place</span><span><Check size={14} /> Agent sessions, ready when you are</span></div>
