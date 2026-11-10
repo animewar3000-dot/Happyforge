@@ -1216,3 +1216,9 @@ button.hf-project-card{width:100%;color:inherit;cursor:pointer}
  .hf-project-form>div{grid-column:auto}
  .hf-project-actions{flex-wrap:wrap}
 }
+
+/* Password recovery controls */
+.auth-forgot{border:0;background:transparent;color:var(--accent);font:inherit;font-size:10px;font-weight:650;padding:4px 0;cursor:pointer}
+.auth-forgot:hover,.auth-error a:hover{text-decoration:underline}
+.auth-tabs .auth-recovery-back{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--text)}
+.auth-error a{display:inline-block;margin-top:6px;color:var(--accent);font-weight:650;text-decoration:none}
