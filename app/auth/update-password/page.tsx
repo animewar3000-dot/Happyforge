@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Bot, LockKeyhole, ShieldCheck } from "lucide-react";
+import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
+import { HappyforgeMark } from "@/components/happyforge-mark";
 import { createClient } from "@/lib/supabase/client";
 
 export default function UpdatePasswordPage() {
@@ -57,7 +58,7 @@ export default function UpdatePasswordPage() {
   return (
     <main className="auth-shell auth-modern-shell">
       <section className="auth-card" aria-labelledby="password-title">
-        <Link href="/" className="auth-brand"><span className="auth-mark"><Bot size={22} /></span><span>happyforge<span className="brand-period">.</span></span></Link>
+        <Link href="/" className="auth-brand"><span className="auth-mark"><HappyforgeMark size={26} /></span><span>happyforge<span className="brand-period">.</span></span></Link>
         <div className="auth-kicker"><ShieldCheck size={14} /> ACCOUNT SECURITY</div>
         <h1 id="password-title">Set a new password.</h1>
         <p className="auth-copy">Choose a strong password to secure your Happyforge account.</p>

@@ -46,3 +46,14 @@ The app uses the Motion for React package (motion/react).
 - UI/UX Pro Max: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 
 These references inform implementation patterns; Happyforge keeps its own original visual identity.
+
+## Shared sign-in and workspace identity
+
+The sign-in and authenticated workspace use one shared identity mark: a four-tile forge symbol in lime, violet, cyan and graphite. Do not substitute unrelated icons for the brand mark on individual routes.
+
+- **Display face:** Doto 900 for the main workspace and authentication story headlines only. Keep form headings and body copy in Geist.
+- **Interface face:** Geist for labels, navigation, forms, body copy and controls.
+- **Utility face:** Geist Mono for runtime status, technical metadata, terminal previews and compact labels.
+- **Palette bridge:** retain the existing graphite/lime foundation, with violet and cyan as secondary accents. Status colors remain semantic and must always be paired with text.
+- **Background signature:** the workspace keeps its existing ambient forge scene; authentication uses its dotted field and restrained orbit treatment. Both share the same dark surfaces and focus treatment.
+- **Behavior boundary:** the static HTML references are visual references only. Authentication, recovery, projects, sessions, runtime status and navigation continue to use the existing Next.js/Supabase implementations. Never reintroduce preview-only auth or fabricated workspace data.

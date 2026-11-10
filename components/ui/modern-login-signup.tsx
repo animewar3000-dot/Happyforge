@@ -3,7 +3,8 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import * as THREE from "three";
-import { ArrowLeft, ArrowRight, Bot, Check, Eye, EyeOff, Fingerprint, LoaderCircle, LockKeyhole, Mail, ShieldCheck, Sparkles, TerminalSquare } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Fingerprint, LoaderCircle, LockKeyhole, Mail, ShieldCheck, Sparkles, TerminalSquare } from "lucide-react";
+import { HappyforgeMark } from "@/components/happyforge-mark";
 import { createClient } from "@/lib/supabase/client";
 import { buildPasswordRecoveryRedirect, getRequestedAuthMode } from "@/lib/auth-recovery.mjs";
 
@@ -193,7 +194,7 @@ export default function ModernLoginSignup() {
       <Link href="/" className="auth-back"><ArrowLeft size={15} /><span>Back to Happyforge</span></Link>
       <div className="auth-layout">
         <aside className="auth-story">
-          <Link href="/" className="auth-brand"><span className="auth-mark"><Bot size={22} /></span><span>happyforge<span className="brand-period">.</span></span></Link>
+          <Link href="/" className="auth-brand"><span className="auth-mark"><HappyforgeMark size={29} /></span><span>happyforge<span className="brand-period">.</span></span></Link>
           <div className="auth-story-copy">
             <div className="auth-kicker"><span className="auth-live-dot" /> YOUR WORKSPACE, YOUR CONTROL</div>
             <h1>{mode === "signin" ? <>Good to have<br />you <span>back.</span></> : mode === "recovery" ? <>Reset your<br /><span>password.</span></> : <>Make room<br />for <span>what&apos;s next.</span></>}</h1>
@@ -207,7 +208,7 @@ export default function ModernLoginSignup() {
           <div className="auth-trust"><span><ShieldCheck size={15} /> Supabase-secured identity</span><span><Fingerprint size={15} /> Your credentials stay private</span></div>
         </aside>
         <section className="auth-card" aria-labelledby="auth-title">
-          <div className="auth-card-head"><div className="auth-mobile-brand"><span className="auth-mark"><Bot size={20} /></span><b>happyforge<span className="brand-period">.</span></b></div><span className="auth-step"><Sparkles size={13} /> YOUR NEXT CHAPTER</span></div>
+          <div className="auth-card-head"><div className="auth-mobile-brand"><span className="auth-mark"><HappyforgeMark size={24} /></span><b>happyforge<span className="brand-period">.</span></b></div><span className="auth-step"><Sparkles size={13} /> YOUR NEXT CHAPTER</span></div>
           <div className="auth-form-heading"><div className="auth-kicker"><ShieldCheck size={14} /> {mode === "signin" ? "SECURE SIGN IN" : mode === "recovery" ? "ACCOUNT RECOVERY" : "GET STARTED"}</div><h2 id="auth-title">{mode === "signin" ? "Welcome back." : mode === "recovery" ? "Reset your password." : "Create your account."}</h2><p>{mode === "signin" ? "Sign in to open your workspace." : mode === "recovery" ? "We’ll email you a one-time link to securely choose a new password." : "Set up your account and start building with Happyforge."}</p></div>
           <div className="auth-tabs" role="tablist" aria-label="Authentication mode">
             {mode === "recovery" ? <button type="button" className="auth-recovery-back" onClick={() => changeMode("signin")}><ArrowLeft size={14} /> Back to sign in</button> : <>

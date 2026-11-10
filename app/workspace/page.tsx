@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Activity, ArrowUp, Bot, Boxes, ChevronDown, Command,
+  Activity, ArrowUp, Bot, Boxes, ChevronDown,
   GitBranch, HardDrive, KeyRound, Menu, MessageSquare, Plus, Settings2,
   ShieldCheck, Sparkles, Wrench, X, LoaderCircle,
   UserRound, LogOut, Search, Clock3, CheckCircle2, CircleAlert,
@@ -11,6 +11,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { buildPasswordRecoveryRedirect } from "@/lib/auth-recovery.mjs";
 import { AmbientScene } from "@/components/ambient-scene";
+import { HappyforgeMark } from "@/components/happyforge-mark";
 import { motion } from "motion/react";
 
 type RuntimeStatus = "checking" | "online" | "unavailable" | "not-configured";
@@ -255,7 +256,7 @@ export default function WorkspacePage() {
       <AmbientScene />
       <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="brand-row">
-          <div className="brand-mark"><Command size={19} /></div>
+          <div className="brand-mark"><HappyforgeMark size={29} /></div>
           <div><div className="brand-name">happyforge<span>.</span></div><div className="brand-caption">AI DEVELOPMENT WORKSPACE</div></div>
           <button className="icon-button sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X size={18}/></button>
         </div>
