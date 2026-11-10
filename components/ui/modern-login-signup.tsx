@@ -197,7 +197,7 @@ export default function ModernLoginSignup() {
           <div className="auth-story-copy">
             <div className="auth-kicker"><span className="auth-live-dot" /> YOUR WORKSPACE, YOUR CONTROL</div>
             <h1>{mode === "signin" ? <>Good to have<br />you <span>back.</span></> : mode === "recovery" ? <>Reset your<br /><span>password.</span></> : <>Make room<br />for <span>what&apos;s next.</span></>}</h1>
-            <p>{mode === "signin" ? "Pick up where your ideas left off. Your projects and agent sessions are right where you need them." : mode === "recovery" ? "Enter your account email and we’ll send a secure password reset link." : mode === "recovery" ? "We’ll help you get back into your workspace securely." : "One workspace for your projects, your tools and the ideas you’re ready to build."}</p>
+            <p>{mode === "signin" ? "Pick up where your ideas left off. Your projects and agent sessions are right where you need them." : mode === "recovery" ? "We’ll help you get back into your workspace securely." : "One workspace for your projects, your tools and the ideas you’re ready to build."}</p>
           </div>
           <div className="auth-terminal" aria-label="Happyforge workspace preview">
             <div className="auth-terminal-top"><span><i /><i /><i /></span><small><TerminalSquare size={12} /> HAPPYFORGE / WORKSPACE</small><span className="terminal-lock"><LockKeyhole size={12} /> PRIVATE</span></div>
