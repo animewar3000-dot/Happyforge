@@ -9,6 +9,7 @@ import {
   FolderGit2, Zap, MoreHorizontal, ExternalLink, LockKeyhole, RefreshCw
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { buildPasswordRecoveryRedirect } from "@/lib/auth-recovery.mjs";
 import { AmbientScene } from "@/components/ambient-scene";
 import { motion } from "motion/react";
 
@@ -74,6 +75,7 @@ export default function WorkspacePage() {
   const [search, setSearch] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [signingOut, setSigningOut] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   const loadWorkspace = useCallback(async () => {
     setLoadingData(true);
@@ -203,6 +205,24 @@ export default function WorkspacePage() {
     setActive("Workspace");
     setSidebarOpen(false);
     setMobileMore(false);
+  }
+
+  async function requestPasswordReset() {
+    if (!userEmail || resettingPassword) return;
+    setResettingPassword(true);
+    setError("");
+    setNotice("");
+    try {
+      const { error: resetError } = await createClient().auth.resetPasswordForEmail(userEmail, {
+        redirectTo: buildPasswordRecoveryRedirect(window.location.origin),
+      });
+      if (resetError) throw resetError;
+      setNotice(`Password reset instructions were sent to ${userEmail}.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not send the password reset email.");
+    } finally {
+      setResettingPassword(false);
+    }
   }
 
   async function signOut() {
@@ -369,7 +389,7 @@ export default function WorkspacePage() {
           )}
 
           {active === "Account" && (
-            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">IDENTITY & SECURITY</span><h1>Your <span>account.</span></h1><p className="hero-copy">Signed-in identity and account security.</p></div></div><div className="hf-account-card"><div className="avatar large">{(userEmail.slice(0,1)||"H").toUpperCase()}</div><div><strong>{userEmail || "Authenticated account"}</strong><small>Authenticated by Supabase Auth</small></div><Badge tone="good">Verified session</Badge></div><div className="hf-feature-grid"><article className="hf-feature-card"><div className="tool-icon blue"><ShieldCheck size={19}/></div><strong>Session security</strong><p>Workspace access is protected by Supabase Auth cookies and server-side identity checks.</p></article><article className="hf-feature-card"><div className="tool-icon orange"><KeyRound size={19}/></div><strong>Password recovery</strong><p>Use the existing login recovery flow to reset your password securely.</p><button onClick={() => window.location.assign("/login?mode=recovery")}>Open recovery</button></article></div><button className="hf-signout" onClick={signOut} disabled={signingOut}><LogOut size={16}/>{signingOut ? "Signing out…" : "Sign out"}</button></section>
+            <section className="hf-panel-page"><div className="hf-page-heading"><div><span className="eyebrow">IDENTITY & SECURITY</span><h1>Your <span>account.</span></h1><p className="hero-copy">Signed-in identity and account security.</p></div></div><div className="hf-account-card"><div className="avatar large">{(userEmail.slice(0,1)||"H").toUpperCase()}</div><div><strong>{userEmail || "Authenticated account"}</strong><small>Authenticated by Supabase Auth</small></div><Badge tone="good">Verified session</Badge></div><div className="hf-feature-grid"><article className="hf-feature-card"><div className="tool-icon blue"><ShieldCheck size={19}/></div><strong>Session security</strong><p>Workspace access is protected by Supabase Auth cookies and server-side identity checks.</p></article><article className="hf-feature-card"><div className="tool-icon orange"><KeyRound size={19}/></div><strong>Password recovery</strong><p>Use the existing login recovery flow to reset your password securely.</p><button onClick={() => void requestPasswordReset()} disabled={resettingPassword || !userEmail}>{resettingPassword ? "Sending reset email…" : "Send password reset email"}</button></article></div><button className="hf-signout" onClick={signOut} disabled={signingOut}><LogOut size={16}/>{signingOut ? "Signing out…" : "Sign out"}</button></section>
           )}
           <footer>HAPPYFORGE <span>·</span> BUILT TO BE EXTENSIBLE</footer>
         </div>
